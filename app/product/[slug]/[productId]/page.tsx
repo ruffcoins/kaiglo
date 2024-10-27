@@ -11,8 +11,7 @@ import {
   IProductDetailResponse,
 } from "@/interfaces/responses/product.interface";
 import { capitalizeFirstLetterOfEachWord } from "@/lib/utils";
-import { Metadata, ResolvingMetadata, Viewport } from "next/types";
-import ProductOpenGraphTags from "@/components/shared/ProductOGComponent";
+import { Metadata, ResolvingMetadata } from "next/types";
 
 type Props = {
   params: { slug: string; productId: string };
@@ -99,6 +98,29 @@ export async function generateMetadata(
       ],
       site: "@KaigloNGR",
     },
+    other: {
+      "product:price:amount": productPrice,
+      "product:price:currency": "NGN",
+      "product:availability": product.productStatus.status,
+      "product:condition": "new",
+      "product:store": product.store.storeName,
+      "product:category": product.category,
+      "product:sku":
+        product.productColors[0]?.productPriceDetails[0]?.sku || "",
+      "product:description":
+        product.productDescriptionSummary ||
+        product.description?.slice(0, 160) ||
+        `${product.name} in ${product.category}`,
+      ["og:product:description"]:
+        product.productDescriptionSummary ||
+        product.description?.slice(0, 160) ||
+        `${product.name} in ${product.category}`,
+      ["og:type"]: "product",
+      ["og:product:price:amount"]: productPrice,
+      ["og:product:price:currency"]: "NGN",
+      ["og:product:availability"]: product.productStatus.status,
+      ["og:product:condition"]: "new",
+    },
     alternates: {
       canonical: productUrl,
     },
@@ -118,14 +140,6 @@ export async function generateMetadata(
       telephone: false,
     },
   };
-}
-
-export async function generateViewport(): Promise<Viewport> {
-  // This is just a placeholder. Adjust as needed for your viewport settings.
-  return {
-    width: 'device-width',
-    initialScale: 1,
-  }
 }
 
 const ProductDetailsIntroduction = dynamic(
@@ -168,47 +182,38 @@ export default async function Product({
   ];
 
   return (
-    <>
-      <ProductOpenGraphTags
-        price={product.productColors[0]?.productPriceDetails[0]?.price.toString(); }
-      currency="NGN"
-      availability={product.productStatus.status}
-      condition="new"
-      category={product.category}
-      />
-      <InnerPageLayout
-        allowCTA
-        breadcrumbItems={breadcrumbItems}
-        productId={productId}
-      >
-        <div className="lg:space-y-5 space-y-1 lg:my-4 my-6">
-          <ProductDetailsIntroduction productId={productId} />
+    <InnerPageLayout
+      allowCTA
+      breadcrumbItems={breadcrumbItems}
+      productId={productId}
+    >
+      <div className="lg:space-y-5 space-y-1 lg:my-4 my-6">
+        <ProductDetailsIntroduction productId={productId} />
 
-          <div className="hidden lg:block">
-            <ProductStore productId={productId} />
-          </div>
-
-          <ProductDescription productId={productId} />
-
-          <ProductReviews productId={productId} />
-
-          <div className="lg:hidden block">
-            <ProductStore productId={productId} />
-          </div>
-
-          <div className="lg:mx-8 lg:rounded-2xl p-6 bg-white lg:space-y-8 space-y-4">
-            <h2 className="lg:text-3xl font-medium">
-              Seller’s Warranty + Return Policy
-            </h2>
-            <p>
-              We offer free return within 7 days of purchase.{" "}
-              <span className="text-kaiglo_info-base">Learn more</span>
-            </p>
-          </div>
-
-          <RelatedProducts productId={productId} />
+        <div className="hidden lg:block">
+          <ProductStore productId={productId} />
         </div>
-      </InnerPageLayout>
-    </>
+
+        <ProductDescription productId={productId} />
+
+        <ProductReviews productId={productId} />
+
+        <div className="lg:hidden block">
+          <ProductStore productId={productId} />
+        </div>
+
+        <div className="lg:mx-8 lg:rounded-2xl p-6 bg-white lg:space-y-8 space-y-4">
+          <h2 className="lg:text-3xl font-medium">
+            Seller’s Warranty + Return Policy
+          </h2>
+          <p>
+            We offer free return within 7 days of purchase.{" "}
+            <span className="text-kaiglo_info-base">Learn more</span>
+          </p>
+        </div>
+
+        <RelatedProducts productId={productId} />
+      </div>
+    </InnerPageLayout>
   );
 }
