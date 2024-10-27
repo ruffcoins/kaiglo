@@ -4,13 +4,12 @@ import Menu from "@/public/images/menu.svg";
 import Logo from "@/components/shared/Logo";
 import CartButton from "@/components/shared/CartButton";
 import WishlistButton from "@/components/shared/WishlistButton";
-import CallToOrderHoverCard from "@/components/shared/headers/CallToOrderCTA";
+import { CallToOrderHoverCard } from "@/components/shared/headers/CallToOrderCTA";
 // import CategoriesNavigation from "./CategoriesNavigation";
 import AuthButton from "@/components/shared/headers/AuthButton";
 import NotificationButton from "@/components/shared/NotificationButton";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-// import MegaMenu from "./MegaMenu";
 
 const GlobalSearch = dynamic(
   () => import("@/components/shared/headers/GlobalSearch"),
@@ -35,9 +34,9 @@ const MegaMenu = dynamic(() => import("./MegaMenu"), {
 
 const DesktopHeader = ({ showCallToOrder }: { showCallToOrder?: boolean }) => {
   return (
-    <header className="fixed top-0 left-0 right-0 z-30 hidden bg-white shadow lg:block lg:px-8">
+    <header className="fixed top-0 left-0 right-0 z-30 hidden bg-white shadow lg:block">
       {/* Top Header */}
-      <div className="relative flex items-center justify-between w-full py-5 space-x-12">
+      <div className="relative flex items-center justify-between w-full py-5 space-x-12 lg:px-8">
         <Logo />
 
         {/* Search */}
@@ -64,8 +63,8 @@ const DesktopHeader = ({ showCallToOrder }: { showCallToOrder?: boolean }) => {
       </div>
 
       {/* Categories and Phone CTA */}
-      <div className="relative flex justify-between py-2.5 text-sm">
-        <div className="flex xl:space-x-4 lg:space-x-2">
+      <div className="relative flex justify-between py-2.5 text-sm lg:px-8">
+        <div className="flex items-center xl:space-x-4 lg:space-x-2">
           <Link
             href="/category"
             className="flex space-x-3 items-center bg-kaiglo_success-100 rounded-full p-1 pr-4"
@@ -81,7 +80,7 @@ const DesktopHeader = ({ showCallToOrder }: { showCallToOrder?: boolean }) => {
 
         {/* Larger Screens Call To Order CTA */}
         {showCallToOrder && (
-          <div className="items-center hidden space-x-2 xl:flex">
+          <div className="xl:flex hidden items-center space-x-2">
             <div className="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer bg-kaiglo_grey-100">
               <Image src={Phone} alt="phone icon" className="" />
             </div>
@@ -95,7 +94,7 @@ const DesktopHeader = ({ showCallToOrder }: { showCallToOrder?: boolean }) => {
           </div>
         )}
 
-        <CallToOrderHoverCard classNames="w-10 h-10 border" />
+        <CallToOrderHoverCard classNames="xl:hidden w-10 h-10 border" />
       </div>
     </header>
     // </div>

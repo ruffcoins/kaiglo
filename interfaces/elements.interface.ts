@@ -32,6 +32,7 @@ export interface ModifiedButtonProps {
   className?: string;
   disabled?: boolean;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  id?: string;
 }
 
 /********** MODIFIED TOAST PROPS ***********/
@@ -58,6 +59,7 @@ export interface ModifiedInputProps {
   label?: string;
   labelClassNames?: string;
   isRequired?: boolean;
+  disabled?: boolean;
 }
 
 /*********** MODIFIED TEXT AREA PROPS *********/

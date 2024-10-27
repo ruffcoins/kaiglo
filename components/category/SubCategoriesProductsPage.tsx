@@ -2,7 +2,6 @@
 
 import FilterComponent from "../shared/FilterComponent";
 import Loader from "../shared/Loader";
-// import ProductCard from "./ProductCard";
 import { useEffect, useState } from "react";
 import { useFilterProducts } from "@/hooks/queries/products/filterProducts";
 import { useInView } from "react-intersection-observer";
@@ -13,30 +12,26 @@ import OrderBox from "@/public/images/order-box.svg";
 import { Button } from "../ui/button";
 import ArrowLeft from "@/public/images/arrow-left.svg";
 import Breadcrumb from "../shared/Breadcrumb";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { capitalizeFirstLetterOfEachWord, cn, sortOptions } from "@/lib/utils";
 import { useProductCategoryDetail } from "@/hooks/queries/products/productCategoryDetail";
 import ProductCard from "../product/ProductCard";
+import { gtmProductListView } from "@/lib/gtm";
+import { FilterOptionResponse } from "@/interfaces/responses/filter.interface";
 
-const SearchPage = ({
+const SubCategoryPage = ({
   Category,
   SubCategory,
+  SecondSubCategory,
+  filterOptions,
 }: {
   Category: string;
   SubCategory: string;
+  SecondSubCategory: string;
+  filterOptions: FilterOptionResponse | undefined;
 }) => {
   const router = useRouter();
-  // const {
-  //   filterProducts,
-  //   refetchfilterProducts,
-  //   isFetchingNextPage,
-  //   fetchNextPage,
-  //   hasNextPage,
-  //   status,
-  //   isRefetching,
-  //   totalProducts,
-  // } = usefilterProducts();
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -54,21 +49,15 @@ const SearchPage = ({
   const { ref, inView } = useInView();
 
   const [openSortDropdown, setOpenSortDropdown] = useState(false);
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(0);
+  const [minPrice, setMinPrice] = useState(100);
+  const [maxPrice, setMaxPrice] = useState(1000000);
   const [category, setCategory] = useState(Category);
+  const [subCategory, setSubCategory] = useState(SubCategory);
+  const [secondSubCategory, setSecondSubCategory] = useState(SecondSubCategory);
   const [brands, setBrands] = useState<string[]>([]);
   const [productColorNames, setProductColorNames] = useState<string[]>([]);
-  const [productSales, setProductSales] = useState<string[]>([]);
-  const [productShipping, setProductShipping] = useState<string[]>([]);
   const [productSizes, setProductSizes] = useState<string[]>([]);
-  const [kaigloSale, setKaigloSale] = useState("");
-  const [name, setName] = useState("");
-  const [subCategory, setSubCategory] = useState(SubCategory);
-  // const [secondSubCategory, setSecondSubCategory] = useState("");
-  // const [ramSizes, setRamSizes] = useState<string[]>([]);
   const [sort, setSort] = useState("Default Sorting");
-  // const [storages, setStorages] = useState<string[]>([]);
 
   const filters = {
     minPrice,
@@ -76,16 +65,10 @@ const SearchPage = ({
     category: Category,
     brands,
     productColorNames,
-    productSales,
-    productShipping,
     productSizes,
-    kaigloSale,
-    name,
     subCategory: SubCategory,
-    // secondSubCategory,
-    // ramSizes,
+    secondSubCategory: SecondSubCategory,
     sort,
-    // storages,
   };
 
   const {
@@ -111,14 +94,12 @@ const SearchPage = ({
     minPrice,
     maxPrice,
     category,
+    subCategory,
+    secondSubCategory,
     brands,
     productColorNames,
-    productSales,
-    productShipping,
     productSizes,
-    name,
     sort,
-    kaigloSale,
     refetchFilterProducts,
   ]);
 
@@ -141,6 +122,26 @@ const SearchPage = ({
 
   const { productCategoryDetail } =
     useProductCategoryDetail(categoryToFilterBy);
+
+  // Google analytics event tracking
+  useEffect(() => {
+    let value = 0;
+
+    filterProducts.forEach((product) => {
+      value += product.productColors[0].productPriceDetails[0].price;
+    });
+
+    if (filterProducts) {
+      const props = {
+        listId: `${SubCategory.toLowerCase()}_subCategory_in_${Category.toLowerCase()}_category_products`,
+        listName: `${SubCategory} SubCategory in ${Category} Category Products`,
+        value,
+        items: filterProducts,
+      };
+
+      gtmProductListView(props);
+    }
+  }, [Category, SubCategory, filterProducts]);
 
   return (
     <>
@@ -198,37 +199,26 @@ const SearchPage = ({
       <div className="grid lg:grid-cols-12 grid-cols-2 lg:mx-8 mx-4 gap-x-5">
         <div className="h-20 col-span-3 rounded-lg lg:block hidden">
           <FilterComponent
-            min={1000}
+            min={100}
             max={1000000}
-            products={filterProducts}
-            category={category}
-            subCategory={subCategory}
-            brand={brands[0]}
-            brands={productCategoryDetail?.brands || []}
-            productColorName={productColorNames[0]}
-            productColorNames={
-              productCategoryDetail?.productColorCode.map(
-                (color) => color.color,
-              ) || []
-            }
-            productSize={productSizes[0]}
-            productSizes={[]}
-            productShipping={productShipping[0]}
-            productSale={productSales[0]}
-            productSales={productCategoryDetail?.sales || []}
-            setCategory={setCategory}
-            setSubCategory={setSubCategory}
+            filterOptions={filterOptions}
+            minPrice={minPrice}
             setMinPrice={setMinPrice}
+            maxPrice={maxPrice}
             setMaxPrice={setMaxPrice}
+            brands={brands}
             setBrands={setBrands}
+            productColorNames={productColorNames}
             setProductColorNames={setProductColorNames}
+            productSizes={productSizes}
             setProductSizes={setProductSizes}
-            setProductShipping={setProductShipping}
-            setProductSales={setProductSales}
-            name={name}
-            setName={setName}
-            setSort={setSort}
-            setKaigloSale={setKaigloSale}
+            category={category}
+            setCategory={setCategory}
+            subCategory={subCategory}
+            setSubCategory={setSubCategory}
+            refetch={refetchFilterProducts}
+            secondSubCategory={secondSubCategory}
+            setSecondSubCategory={setSecondSubCategory}
           />
         </div>
         {status === "loading" || isRefetching ? (
@@ -247,13 +237,13 @@ const SearchPage = ({
                     id={product.id}
                     name={product.name}
                     price={
-                      product.productColors[0].productPriceDetails[0].newPrice
-                        ? product.productColors[0].productPriceDetails[0]
-                            .newPrice
+                      product.sales
+                        ? (product.productColors[0].productPriceDetails[0]
+                            .newPrice as number)
                         : product.productColors[0].productPriceDetails[0].price
                     }
                     oldPrice={
-                      product.productColors[0].productPriceDetails[0].newPrice
+                      product.sales
                         ? product.productColors[0].productPriceDetails[0].price
                         : undefined
                     }
@@ -296,15 +286,14 @@ const SearchPage = ({
               variant="secondary"
               className="w-48 font-medium rounded-lg"
               onClick={() => {
-                setMinPrice(0);
-                setMaxPrice(0);
-                setCategory("");
+                setMinPrice(100);
+                setMaxPrice(1000000);
+                setCategory(Category);
+                setSubCategory(SubCategory);
+                setSecondSubCategory("");
                 setBrands([]);
                 setProductColorNames([]);
                 setProductSizes([]);
-                setProductShipping([]);
-                setProductSales([]);
-                setName("");
                 refetchFilterProducts();
               }}
             >
@@ -316,4 +305,4 @@ const SearchPage = ({
     </>
   );
 };
-export default SearchPage;
+export default SubCategoryPage;

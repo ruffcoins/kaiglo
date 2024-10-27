@@ -11,8 +11,8 @@ import { createSlug } from "@/lib/utils";
 import { debounce } from "lodash";
 import OrderBox from "@/public/images/empty-state-order-box.svg";
 import Loader from "../shared/Loader";
-import { useSearchStore } from "@/hooks/queries/store/searchStoreProducts";
 import { useGetStoreDetails } from "@/hooks/queries/store/getStoreDetails";
+import { useSearchStore } from "@/hooks/queries/store/searchStoreProducts";
 
 const StoreSearch = ({ storeName }: { storeName: string }) => {
   const { store } = useGetStoreDetails(storeName);

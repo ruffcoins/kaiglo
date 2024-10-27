@@ -12,6 +12,7 @@ const ModifiedInput = ({
   onChange,
   onValueChange,
   isRequired,
+  disabled,
 }: ModifiedInputProps) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
@@ -31,6 +32,8 @@ const ModifiedInput = ({
       onChange={handleChange}
       className={cn("h-12 w-full", classNames)}
       required={isRequired}
+      maxLength={id === "phone" ? 11 : undefined}
+      disabled={disabled}
     />
   );
 };

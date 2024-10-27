@@ -20,6 +20,32 @@ const ProductBadge = ({
         return "App Deal";
       case "BLACK_FRIDAY":
         return "Black Friday";
+      case "11:11":
+        return "11:11";
+      case "CLEARANCE":
+        return "Clearance";
+      case "EMBER":
+        return "Ember";
+      case "EASTER":
+        return "Easter";
+      case "BACK_TO_SCHOOL":
+        return "Back to School";
+      case "RAMADAN":
+        return "Ramadan";
+      case "MOTHER'S_DAY":
+        return "Mother's Day";
+      case "PAYDAY_DEALS":
+        return "Payday Deals";
+      case "WEEKEND":
+        return "Weekend";
+      case "FLASH_SALES":
+        return "Flash Sales";
+      case "KAIGLO_ANNIVERSARY":
+        return "Kaiglo Anniversary";
+      case "HAPPY_HOUR":
+        return "Happy Hour";
+      case "BUZZ_ALERT":
+        return "Buzz Alert";
       default:
         return "";
     }

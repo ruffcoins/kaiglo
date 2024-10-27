@@ -17,6 +17,7 @@ import { Button } from "../ui/button";
 import OrderBox from "@/public/images/order-box.svg";
 import { useTopSellingProducts } from "@/hooks/queries/products/topSellingProducts";
 import { useProductCategoryDetail } from "@/hooks/queries/products/productCategoryDetail";
+import FilterComponent0 from "../shared/FilterComponent0";
 
 const Introduction = () => {
   const router = useRouter();
@@ -175,7 +176,7 @@ const Introduction = () => {
 
       <div className="grid lg:grid-cols-12 grid-cols-2 lg:gap-x-5">
         <div className="h-20 col-span-3 rounded-lg lg:block hidden">
-          <FilterComponent
+          <FilterComponent0
             min={1000}
             max={1000000}
             products={topSellingProducts}
@@ -223,13 +224,13 @@ const Introduction = () => {
                     id={product.id}
                     name={product.name}
                     price={
-                      product.productColors[0].productPriceDetails[0].newPrice
-                        ? product.productColors[0].productPriceDetails[0]
-                            .newPrice
+                      product.sales
+                        ? (product.productColors[0].productPriceDetails[0]
+                            .newPrice as number)
                         : product.productColors[0].productPriceDetails[0].price
                     }
                     oldPrice={
-                      product.productColors[0].productPriceDetails[0].newPrice
+                      product.sales
                         ? product.productColors[0].productPriceDetails[0].price
                         : undefined
                     }

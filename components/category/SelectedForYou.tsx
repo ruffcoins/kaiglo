@@ -1,17 +1,46 @@
 "use client";
 
 import Image from "next/image";
-import Shoe from "@/public/images/shoe.svg";
-import Bag from "@/public/images/bag.svg";
-import Gymwear from "@/public/images/gymwear.svg";
 import { useProductCategoryDetail } from "@/hooks/queries/products/productCategoryDetail";
-import { capitalizeFirstLetterOfEachWord, cn } from "@/lib/utils";
+import { capitalizeFirstLetterOfEachWord } from "@/lib/utils";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import useGetAllCategories from "@/hooks/queries/category/getAllCategories";
+import {
+  Category,
+  CategoryView,
+} from "@/interfaces/responses/allCategory.interface";
+import Placeholder from "@/public/images/product-image-placeholder.png";
+
+const getSubCategoryImages = (
+  categoryName: string,
+  allCategories: CategoryView[],
+) => {
+  const category = allCategories?.filter(
+    (category) => category.name === decodeURIComponent(categoryName),
+  );
+
+  const subCategories = category?.map((subCategory) => subCategory.category);
+  const subCategoriesImages = subCategories?.map((item) =>
+    item.filter((item) => item.category.length > 0),
+  );
+  return subCategoriesImages?.[0] || [];
+};
 
 const SelectedForYou = ({ categoryName }: { categoryName: string }) => {
+  const [images, setImages] = useState<Category[]>([]);
+  const { allCategories } = useGetAllCategories();
+
   const { productCategoryDetail } = useProductCategoryDetail(categoryName);
 
-  const images = [Shoe, Bag, Gymwear];
+  useEffect(() => {
+    const subCategories = getSubCategoryImages(
+      categoryName,
+      allCategories as CategoryView[],
+    );
+
+    setImages(subCategories);
+  }, [allCategories, categoryName]);
 
   return (
     <div className="space-y-5">
@@ -19,19 +48,22 @@ const SelectedForYou = ({ categoryName }: { categoryName: string }) => {
 
       <div className="lg:grid lg:grid-cols-3 flex overflow-x-auto lg:space-x-5 w-full scrollbar-hide">
         {productCategoryDetail?.productCategory.category
+          .filter((item) => item.category.length > 0)
           .slice(0, 3)
           .map((category, index) => (
             <div
-              className="lg:col-span-1 flex-shrink-0 flex rounded-xl bg-white overflow-hidden min-w-[250px] lg:min-w-0 mb-4 lg:mb-0 mr-4 lg:mr-0"
+              className="lg:col-span-1 flex-shrink-0 grid grid-cols-2 rounded-xl bg-white overflow-hidden min-w-[250px] lg:min-w-0 mb-4 lg:mb-0 mr-4 lg:mr-0"
               key={index}
             >
-              <Image
-                src={images[index]}
-                alt="search"
-                className="lg:p-4 lg:w-48 lg:h-48 w-32 h-32"
-                width={128}
-                height={128}
-              />
+              <div className="col-span-1 flex justify-center items-center p-4">
+                <Image
+                  src={images[index]?.productUrl || Placeholder}
+                  alt={images[index]?.name || "category"}
+                  className="lg:p-4 lg:w-40 lg:h-40 w-32 h-32 rounded-full"
+                  width={128}
+                  height={128}
+                />
+              </div>
 
               <div className="w-full p-4 space-y-2">
                 <Link

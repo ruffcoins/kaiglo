@@ -235,7 +235,7 @@ const OrderDetails = ({ orderId }: { orderId: string }) => {
                 <span className="col-span-3 font-medium text-end lg:text-start text-kaiglo_brand-base">
                   {order?.appliedCoupon === null
                     ? "None"
-                    : order?.appliedCoupon.toLocaleString()}
+                    : order?.appliedCoupon.toLocaleString().toUpperCase()}
                 </span>
               </p>
 

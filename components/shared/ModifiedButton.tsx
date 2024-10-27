@@ -9,6 +9,7 @@ const ModifiedButton = ({
   onClick,
   disabled,
   type,
+  id,
 }: ModifiedButtonProps) => {
   return (
     <Button
@@ -17,6 +18,7 @@ const ModifiedButton = ({
       variant={variant}
       onClick={onClick}
       disabled={disabled}
+      id={id}
     >
       {value}
     </Button>

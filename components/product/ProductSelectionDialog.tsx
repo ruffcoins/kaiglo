@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { useCartContext } from "@/contexts/CartContext";
 import useAuth from "@/hooks/useAuth";
 import { useProductDetails } from "@/hooks/queries/products/useProductDetails";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 interface ProductSelectionProps {
   open: boolean;
@@ -535,7 +536,7 @@ const ProductSelectionDialog = ({
                 </div>
 
                 {maxQuantity === 0 && (
-                  <p className="text-kaiglo_critical-500 text-sm">
+                  <p className="text-kaiglo_critical-500 text-sm font-medium">
                     Out of Stock
                   </p>
                 )}
@@ -574,6 +575,7 @@ const ProductSelectionDialog = ({
                   "text-black rounded-full w-full h-12 uppercase font-medium bg-kaiglo_accent-100",
                 )}
                 disabled={quantity < 1 || colors.length === 0}
+                id="add-to-cart"
                 onClick={() => {
                   if (quantity > 0) {
                     setOpenSideCart?.(true);
@@ -592,14 +594,55 @@ const ProductSelectionDialog = ({
                       userId: user?.id || "",
                       productName: productName,
                       maxQuantity: maxQuantity.toString(),
+                      category: data?.response.category,
+                      secondSubCategory: data?.response.secondSubCategory || "",
+                      subCategory: data?.response.subCategory,
+                      storeName: data?.response.store.storeName,
+                      storeId: data?.response.store.id,
+                      variant: [
+                        selectedColor,
+                        selectedRamSize || "",
+                        selectedSize || "",
+                        selectedStorage || "",
+                      ],
                     };
 
+                    console.log("item", item);
                     if (user) {
                       addItemToCart(item);
                     } else {
                       const tempCart = getCartFromCookies();
                       tempCart.push(item);
                       saveCartToCookies(tempCart);
+                    }
+
+                    if (
+                      process.env.NODE_ENV === "production" &&
+                      process.env.NEXT_PUBLIC_KAIGLO_ENV === "prod"
+                    ) {
+                      sendGTMEvent({ ecommerce: null });
+
+                      sendGTMEvent({
+                        event: "add_to_cart",
+                        ecommerce: {
+                          currency: "NGN",
+                          value: currentPrice,
+                          items: [
+                            {
+                              item_id: data?.response.id,
+                              item_name: productName,
+                              affiliation: data?.response.store.storeName,
+                              item_category: data?.response.category,
+                              item_category2: data?.response.subCategory,
+                              item_category3: data?.response.secondSubCategory,
+                              item_variant: selectedColor,
+                              price: currentPrice / quantity,
+                              quantity: quantity,
+                            },
+                          ],
+                        },
+                        kaigloEnv: process.env.NEXT_PUBLIC_KAIGLO_ENV,
+                      });
                     }
                   }
                 }}

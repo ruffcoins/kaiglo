@@ -27,6 +27,7 @@ import Pay from "./Pay";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { AbandonedOrderDTO } from "@/interfaces/orders/order.interface";
 import useAbandonedOrder from "@/hooks/mutation/order/abandonedOrder";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 const PaymentDialog = ({
   open,
@@ -42,6 +43,7 @@ const PaymentDialog = ({
   transformedCartItems,
   setOrderCreated,
   setIsProcessing,
+  appliedCoupon,
 }: {
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
@@ -57,14 +59,17 @@ const PaymentDialog = ({
   transformedCartItems: CheckoutOrderItem[];
   setOrderCreated: React.Dispatch<SetStateAction<boolean>>;
   setIsProcessing: React.Dispatch<SetStateAction<boolean>>;
+  appliedCoupon: string;
 }) => {
   const userDetails: {
     address: string;
+    appliedCoupon: string;
     buyer: string;
     state: string;
     email: string;
   } = {
     address,
+    appliedCoupon,
     buyer: name,
     state,
     email,
@@ -336,6 +341,24 @@ const PaymentDialog = ({
               onClick={() => {
                 handlePayment();
                 setOpen(false);
+
+                if (
+                  process.env.NODE_ENV === "production" &&
+                  process.env.NEXT_PUBLIC_KAIGLO_ENV === "prod"
+                ) {
+                  sendGTMEvent({ ecommerce: null });
+
+                  sendGTMEvent({
+                    event: "add_payment_info",
+                    ecommerce: {
+                      currency: "NGN",
+                      value: checkoutAmount,
+                      payment_type: selectedMethod,
+                      items: transformedCartItems,
+                    },
+                    kaigloEnv: process.env.NEXT_PUBLIC_KAIGLO_ENV,
+                  });
+                }
               }}
             >
               PAY

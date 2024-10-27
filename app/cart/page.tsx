@@ -16,25 +16,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { AuthDialog } from "@/components/auth/dialogs/AuthDialog";
 import EnterOtp from "@/components/auth/dialogs/EnterOtp";
 import useAuth from "@/hooks/useAuth";
+import Loader from "@/components/shared/Loader";
+import { gtmViewCart } from "@/lib/gtm";
 
 const Cart = () => {
-  // console.log('Start'); // Synchronous code
-
-  // setTimeout(() => {
-  //   console.log('Timeout 1'); // Asynchronous code
-  // }, 0);
-
-  // Promise.resolve().then(() => {
-  //   console.log('Promise 1'); // Asynchronous code
-  // }).then(() => {
-  //   console.log('Promise 2'); // Asynchronous code
-  // });
-
-  // setTimeout(() => {
-  //   console.log('Timeout 2'); // Asynchronous code
-  // }, 0);
-
-  // console.log('End'); // Synchronous code
   const router = useRouter();
   const pathname = usePathname();
   const { isLoggedIn } = useAuth();
@@ -53,6 +38,7 @@ const Cart = () => {
     removeCheckedItems,
     setCheckoutItems,
     getCheckedItems,
+    mergingCarts,
   } = useCartContext();
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
@@ -63,6 +49,44 @@ const Cart = () => {
   useEffect(() => {
     if (!isLoggedIn) {
       sessionStorage.setItem("originalUrl", pathname);
+    }
+  }, []);
+
+  // Google analytics event tracking
+  useEffect(() => {
+    if (cart) {
+      let cartList: {
+        id: string;
+        name: string;
+        price: number;
+        quantity: number;
+        storeName: string;
+        category: string;
+        subCategory: string;
+        secondSubCategory: string;
+        variant: string[];
+      }[] = [];
+
+      cart.map((item) =>
+        cartList.push({
+          id: item.productId,
+          name: item.productName,
+          price: item.price,
+          quantity: parseInt(item.quantity),
+          storeName: item?.storeName || "",
+          category: item.category || "",
+          subCategory: item.subCategory || "",
+          secondSubCategory: item.secondSubCategory || "",
+          variant: item.variant || [],
+        }),
+      );
+
+      const props = {
+        value: subTotal,
+        items: cartList,
+      };
+
+      gtmViewCart(props);
     }
   }, []);
 
@@ -247,6 +271,10 @@ const Cart = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          ) : mergingCarts ? (
+            <div className="h-[calc(100vh-30rem)] col-span-full flex flex-col items-center justify-center space-y-4">
+              <Loader />
             </div>
           ) : (
             <CartEmptyState />

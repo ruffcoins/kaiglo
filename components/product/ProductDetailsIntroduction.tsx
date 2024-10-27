@@ -6,15 +6,15 @@ import Rating from "@/components/shared/Rating";
 import Image from "next/image";
 import ShippingGreen from "@/public/images/shipping-green.svg";
 import { Button } from "@/components/ui/button";
-import Whatsapp from "@/public/images/whatsapp.svg";
 import ProductSelectionDialog from "./ProductSelectionDialog";
 import { getPriceRange } from "@/lib/utils";
 import ProductBadge from "./ProductBadge";
 import useProductDetail from "@/hooks/useProductDetail";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthDialog } from "../auth/dialogs/AuthDialog";
 import EnterOtp from "../auth/dialogs/EnterOtp";
 import { useGetRatingAndReviewSummary } from "@/hooks/queries/products/getRatingSummary";
+import { gtmProductView } from "@/lib/gtm";
 
 const ProductDetailsIntroduction = ({ productId }: { productId: string }) => {
   const {
@@ -33,6 +33,29 @@ const ProductDetailsIntroduction = ({ productId }: { productId: string }) => {
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+
+  useEffect(() => {
+    if (productId && data) {
+      const product = data.response;
+
+      const props = {
+        value:
+          product.productColors[0].productPriceDetails[0].price *
+          parseInt(product.productColors[0].productPriceDetails[0].quantity),
+        id: product.id,
+        name: product.name,
+        price: product.productColors[0].productPriceDetails[0].price,
+        quantity: parseInt(
+          product.productColors[0].productPriceDetails[0].quantity,
+        ),
+        category: product.category,
+        subCategory: product.subCategory,
+        secondSubCategory: product.secondSubCategory,
+        storeName: product.store.storeName,
+      };
+      gtmProductView(props);
+    }
+  }, [productId]);
 
   return (
     <>
@@ -68,13 +91,11 @@ const ProductDetailsIntroduction = ({ productId }: { productId: string }) => {
               </div>
 
               <div className="lg:border border-kaiglo_grey-disabled rounded-lg lg:p-4 py-2">
-                {data?.response.productColors[0].productPriceDetails[0]
-                  .discount ? (
+                {data?.response.sales ? (
                   <div className="space-y-2">
                     <p className="font-bold text-lg lg:text-2xl">
                       {getPriceRange(newPrices)}
                     </p>
-                    {/*  */}
                     <div className="flex items-center space-x-2">
                       <span className="font-medium line-through text-kaiglo_grey-placeholder h-full">
                         ₦{prices[0].toLocaleString()}
@@ -146,10 +167,10 @@ const ProductDetailsIntroduction = ({ productId }: { productId: string }) => {
               </div>
             </div>
 
-            <div className="hidden lg:flex justify-between space-x-14 mt-8 xl:mt-0">
+            <div className="hidden lg:flex justify-between space-x-8 mt-8 xl:mt-0">
               <Button
                 variant="accent"
-                className="text-black rounded-full w-[316px] h-12 uppercase font-medium bg-kaiglo_accent-100"
+                className="text-black rounded-full min:w-[316px] w-full h-12 uppercase font-medium bg-kaiglo_accent-100"
                 onClick={toggleProductSelectionDialog}
               >
                 Add to Cart
@@ -157,18 +178,11 @@ const ProductDetailsIntroduction = ({ productId }: { productId: string }) => {
 
               <Button
                 variant="primary"
-                className="bg-kaiglo_brand-base w-[316px] h-12 text-white rounded-full px-8 py-3 uppercase font-medium"
+                className="bg-kaiglo_brand-base min:w-[316px] w-full h-12 text-white rounded-full px-8 py-3 uppercase font-medium"
                 onClick={toggleProductSelectionDialog}
               >
                 Buy Now
               </Button>
-              <Image
-                src={Whatsapp}
-                alt="Whatsapp"
-                className="w-12 h-12"
-                width={48}
-                height={48}
-              />
             </div>
           </div>
         </div>

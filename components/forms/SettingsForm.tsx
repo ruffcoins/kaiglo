@@ -46,10 +46,13 @@ const SettingsForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="w-full grid gap-4 lg:grid-cols-12 col-span-1 px-4 lg:px-0">
-        <div className="flex lg:justify-center items-center col-span-1">
-          <span className="border rounded-full p-8">
-            <PersonIcon className="min-w-6 min-h-6" />
-          </span>
+        <div className="lg:col-span-1 flex justify-center">
+          <div className="flex items-center justify-center w-20 h-20 border border-kaiglo_success-200 rounded-full bg-kaiglo_success-50">
+            <p className="font-medium text-kaiglo_grey-700">
+              {user?.firstName?.[0] || ""}
+              {user?.lastName?.[0] || ""}
+            </p>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 lg:col-span-11 lg:gap-6 gap-4 lg:ml-6">
@@ -91,6 +94,7 @@ const SettingsForm = () => {
               isRequired={true}
               classNames="pl-20"
               data-testid="phone"
+              disabled
             />
           </div>
         </div>

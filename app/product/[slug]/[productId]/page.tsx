@@ -5,10 +5,14 @@ import RelatedProducts from "@/components/product/RelatedProducts";
 import InnerPageLayout from "@/components/layouts/InnerPageLayout";
 import ProductDetailsIntroductionSkeletonLoader from "@/components/product/skeletons/ProductDetailsIntroductionSkeletonLoader";
 import ProductStoreSkeleton from "@/components/product/skeletons/ProductStore";
-import { postRequest } from "@/utils/apiCaller";
-import { IProductDetailResponse } from "@/interfaces/responses/product.interface";
+import { getRequestParams, postRequest } from "@/utils/apiCaller";
+import {
+  IProductDescriptionResponse,
+  IProductDetailResponse,
+} from "@/interfaces/responses/product.interface";
 import { capitalizeFirstLetterOfEachWord } from "@/lib/utils";
-import { Metadata, ResolvingMetadata } from "next/types";
+import { Metadata, ResolvingMetadata, Viewport } from "next/types";
+import ProductOpenGraphTags from "@/components/shared/ProductOGComponent";
 
 type Props = {
   params: { slug: string; productId: string };
@@ -28,16 +32,29 @@ export async function generateMetadata(
     payload: { productId },
   });
 
+  const { response: productDescription } = await getRequestParams<
+    { productId: string },
+    IProductDescriptionResponse
+  >({
+    url: "/product/product-description",
+    params: { productId },
+  });
+
   // optionally access and extend (rather than replace) parent metadata
   const previousImages = (await parent).openGraph?.images || [];
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://kaiglo.com";
   const productUrl = `${baseUrl}${product.productUrl}`;
 
+  const productPrice =
+    product.productColors[0]?.productPriceDetails[0]?.price.toString();
+  const productImage =
+    product.productViews.length > 0 ? product.productViews[0].productUrl : "";
+
   return {
     title: `${product.name} | ${product.store.storeName} | Kaiglo Nigeria`,
     description:
-      product.productDescriptionSummary ||
+      productDescription ||
       product.description?.slice(0, 160) ||
       `${product.name} in ${product.category}`,
     keywords: [
@@ -59,14 +76,13 @@ export async function generateMetadata(
       url: `${baseUrl}/product/${slug}/${productId}`,
       siteName: "Kaiglo Nigeria",
       images: [
-        ...product.productViews.map((pv) => ({
-          url: pv.productUrl,
-          alt: `${product.name}`,
-        })),
+        {
+          url: productImage,
+          alt: product.name,
+        },
         ...previousImages,
       ],
       locale: "en_NG",
-      type: "website",
     },
     twitter: {
       card: "summary_large_image",
@@ -76,23 +92,12 @@ export async function generateMetadata(
         product.description?.slice(0, 160) ||
         `${product.name} in ${product.category}`,
       images: [
-        ...product.productViews.map((pv) => ({
-          url: pv.productUrl,
-          alt: `${product.name}`,
-        })),
+        {
+          url: productImage,
+          alt: product.name,
+        },
       ],
       site: "@KaigloNGR",
-    },
-    other: {
-      "product:price:amount":
-        product.productColors[0]?.productPriceDetails[0]?.price.toString(),
-      "product:price:currency": "NGN",
-      "product:availability": product.productStatus.status,
-      "product:condition": "new",
-      "product:store": product.store.storeName,
-      "product:category": product.category,
-      "product:sku":
-        product.productColors[0]?.productPriceDetails[0]?.sku || "",
     },
     alternates: {
       canonical: productUrl,
@@ -113,6 +118,14 @@ export async function generateMetadata(
       telephone: false,
     },
   };
+}
+
+export async function generateViewport(): Promise<Viewport> {
+  // This is just a placeholder. Adjust as needed for your viewport settings.
+  return {
+    width: 'device-width',
+    initialScale: 1,
+  }
 }
 
 const ProductDetailsIntroduction = dynamic(
@@ -155,38 +168,47 @@ export default async function Product({
   ];
 
   return (
-    <InnerPageLayout
-      allowCTA
-      breadcrumbItems={breadcrumbItems}
-      productId={productId}
-    >
-      <div className="lg:space-y-5 space-y-1 lg:my-4 my-6">
-        <ProductDetailsIntroduction productId={productId} />
+    <>
+      <ProductOpenGraphTags
+        price={product.productColors[0]?.productPriceDetails[0]?.price.toString(); }
+      currency="NGN"
+      availability={product.productStatus.status}
+      condition="new"
+      category={product.category}
+      />
+      <InnerPageLayout
+        allowCTA
+        breadcrumbItems={breadcrumbItems}
+        productId={productId}
+      >
+        <div className="lg:space-y-5 space-y-1 lg:my-4 my-6">
+          <ProductDetailsIntroduction productId={productId} />
 
-        <div className="hidden lg:block">
-          <ProductStore productId={productId} />
+          <div className="hidden lg:block">
+            <ProductStore productId={productId} />
+          </div>
+
+          <ProductDescription productId={productId} />
+
+          <ProductReviews productId={productId} />
+
+          <div className="lg:hidden block">
+            <ProductStore productId={productId} />
+          </div>
+
+          <div className="lg:mx-8 lg:rounded-2xl p-6 bg-white lg:space-y-8 space-y-4">
+            <h2 className="lg:text-3xl font-medium">
+              Seller’s Warranty + Return Policy
+            </h2>
+            <p>
+              We offer free return within 7 days of purchase.{" "}
+              <span className="text-kaiglo_info-base">Learn more</span>
+            </p>
+          </div>
+
+          <RelatedProducts productId={productId} />
         </div>
-
-        <ProductDescription productId={productId} />
-
-        <ProductReviews productId={productId} />
-
-        <div className="lg:hidden block">
-          <ProductStore productId={productId} />
-        </div>
-
-        <div className="lg:mx-8 lg:rounded-2xl p-6 bg-white lg:space-y-8 space-y-4">
-          <h2 className="lg:text-3xl font-medium">
-            Seller’s Warranty + Return Policy
-          </h2>
-          <p>
-            We offer free return within 7 days of purchase.{" "}
-            <span className="text-kaiglo_info-base">Learn more</span>
-          </p>
-        </div>
-
-        <RelatedProducts productId={productId} />
-      </div>
-    </InnerPageLayout>
+      </InnerPageLayout>
+    </>
   );
 }

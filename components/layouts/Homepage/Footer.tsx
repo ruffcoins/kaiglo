@@ -20,7 +20,7 @@ import BottomNav, { BottomNavProps } from "@/components/shared/BottomNav";
 const Footer = ({ allowCTA, productId }: BottomNavProps) => {
   return (
     <>
-      <footer className="lg:mb-0 mb-[4.5rem]">
+      <footer className="md:block hidden lg:mb-0 mb-[4.5rem]">
         <div className="px-5 py-8 mx-auto bg-white lg:px-8">
           <div className="flex flex-col justify-between space-y-8 lg:flex-row lg:space-y-0">
             {/* Column 1 */}

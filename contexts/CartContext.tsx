@@ -2,6 +2,7 @@
 
 import React, {
   createContext,
+  Dispatch,
   useCallback,
   useContext,
   useEffect,
@@ -22,9 +23,10 @@ import useUpdateItemQuantity from "@/hooks/mutation/cart/updateItemQuantity";
 import { useQueryClient } from "@tanstack/react-query";
 import useAddItemToCart from "@/hooks/mutation/cart/addItemToCart";
 import useAddMultipleItemsToCart from "@/hooks/mutation/cart/addMultipleItemsToCart";
+import { sendGTMEvent } from "@next/third-parties/google";
 interface CartContextType {
   cart: ICacheCart[];
-  setCart: React.Dispatch<React.SetStateAction<ICacheCart[]>>;
+  setCart: Dispatch<React.SetStateAction<ICacheCart[]>>;
   incrementItemQuantity: (index: number) => void;
   decrementItemQuantity: (index: number) => void;
   checkedItems: Record<string, boolean>;
@@ -37,6 +39,8 @@ interface CartContextType {
   checkoutItems: ICacheCart[];
   setCheckoutItems: (items: ICacheCart[]) => void;
   getCheckoutTotal: () => number;
+  mergingCarts: boolean;
+  setMergingCarts: Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface CartProviderProps {
@@ -51,6 +55,7 @@ const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [checkoutItems, setCheckoutItems] = useState<ICacheCart[]>([]);
   const [subTotal, setSubTotal] = useState(0);
+  const [mergingCarts, setMergingCarts] = useState(false);
   const { user } = useFetchUserProfile();
   const { removeItemFromCart, removeItemFromCartAsync } =
     useRemoveItemFromCart();
@@ -209,6 +214,40 @@ const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       const newCheckedItems: Record<string, boolean> = {};
       setCheckedItems(newCheckedItems);
     }
+
+    let totalValue = 0;
+
+    checkedItemsToRemove.forEach((item) => {
+      totalValue += item.price * parseInt(item.quantity);
+    });
+
+    if (
+      process.env.NODE_ENV === "production" &&
+      process.env.NEXT_PUBLIC_KAIGLO_ENV === "prod"
+    ) {
+      sendGTMEvent({ ecommerce: null });
+
+      sendGTMEvent({
+        event: "remove_from_cart",
+        ecommerce: {
+          currency: "NGN",
+          value: totalValue,
+          items: checkedItemsToRemove.map((item, index) => ({
+            item_id: item.productId,
+            item_name: item.productName,
+            index,
+            price: item.price,
+            quantity: item.quantity,
+            affiliation: item.storeName || "",
+            item_category: item.category || "",
+            item_category2: item.subCategory || "",
+            item_category3: item.secondSubCategory || "",
+            item_variant: item.variant || "",
+          })),
+        },
+        kaigloEnv: process.env.NEXT_PUBLIC_KAIGLO_ENV,
+      });
+    }
   };
 
   const handleMergeCarts = useCallback(async () => {
@@ -230,6 +269,7 @@ const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             userId: user.id,
             productName: item.productName,
             maxQuantity: item.maxQuantity.toString(),
+            storeId: item.storeId,
           };
         });
 
@@ -275,6 +315,8 @@ const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         checkoutItems,
         setCheckoutItems,
         getCheckoutTotal,
+        mergingCarts,
+        setMergingCarts,
       }}
     >
       {children}

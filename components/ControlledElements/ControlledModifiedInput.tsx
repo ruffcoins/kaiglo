@@ -15,6 +15,7 @@ const ControlledModifiedInput = <TFormValue extends FieldValues>({
   classNames,
   labelClassNames,
   onValueChange,
+  disabled,
 }: ControlledModifiedInputProps<TFormValue>) => {
   return (
     <div>
@@ -35,6 +36,7 @@ const ControlledModifiedInput = <TFormValue extends FieldValues>({
               placeholder={placeholder}
               label={label}
               labelClassNames={labelClassNames}
+              disabled={disabled}
             />
             {error && (
               <p className="text-[10px] mt-1 font-light text-kaiglo_critical-base">

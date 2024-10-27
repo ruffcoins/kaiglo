@@ -277,13 +277,13 @@ const MobileSearchPage = () => {
                     id={product.id}
                     name={product.name}
                     price={
-                      product.productColors[0].productPriceDetails[0].newPrice
-                        ? product.productColors[0].productPriceDetails[0]
-                            .newPrice
+                      product.sales
+                        ? (product.productColors[0].productPriceDetails[0]
+                            .newPrice as number)
                         : product.productColors[0].productPriceDetails[0].price
                     }
                     oldPrice={
-                      product.productColors[0].productPriceDetails[0].newPrice
+                      product.sales
                         ? product.productColors[0].productPriceDetails[0].price
                         : undefined
                     }

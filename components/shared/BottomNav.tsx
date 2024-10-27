@@ -69,9 +69,11 @@ const BottomNav = ({ allowCTA, productId }: BottomNavProps) => {
                   "flex flex-col items-center justify-center gap-1 p-1 cursor-pointer",
                   (pathname === item.link ||
                     (pathname.includes("/app/") && item.title === "Account") ||
-                    (pathname.includes("/product/") &&
+                    (pathname.startsWith("/category/") &&
                       item.title === "Category") ||
-                    (pathname.includes("/category/") &&
+                    (pathname.startsWith("/product/") &&
+                      item.title === "Category") ||
+                    (pathname.includes("/sales/") &&
                       item.title === "Category")) &&
                     "bg-kaiglo_success-100 rounded-lg",
                 )}
@@ -82,9 +84,12 @@ const BottomNav = ({ allowCTA, productId }: BottomNavProps) => {
                       ? item.activeIcon
                       : pathname.includes("/app/") && item.title === "Account"
                         ? item.activeIcon
-                        : (pathname.includes("/product/") ||
-                              pathname.includes("/category/")) &&
-                            item.title === "Category"
+                        : (pathname.startsWith("/category/") &&
+                              item.title === "Category") ||
+                            (pathname.startsWith("/product/") &&
+                              item.title === "Category") ||
+                            (pathname.includes("/sales") &&
+                              item.title === "Category")
                           ? item.activeIcon
                           : item.inactiveIcon
                   }
@@ -100,9 +105,12 @@ const BottomNav = ({ allowCTA, productId }: BottomNavProps) => {
                       ? "text-kaiglo_brand-base font-medium"
                       : pathname.includes("/app/") && item.title === "Account"
                         ? "text-kaiglo_brand-base font-medium"
-                        : (pathname.includes("/product/") ||
-                              pathname.includes("/category/")) &&
-                            item.title === "Category"
+                        : (pathname.startsWith("/category/") &&
+                              item.title === "Category") ||
+                            (pathname.startsWith("/product/") &&
+                              item.title === "Category") ||
+                            (pathname.includes("/sales") &&
+                              item.title === "Category")
                           ? "text-kaiglo_brand-base font-medium"
                           : "text-kaiglo_grey-placeholder font-normal",
                     "text-[10px]",

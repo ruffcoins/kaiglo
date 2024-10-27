@@ -760,6 +760,18 @@ export const footerMenuColumn3 = [
 ];
 // End Footer Menu
 
+export const mobileFooter = [
+  { title: "Shipping", link: "/shipping-and-delivery" },
+  { title: "Contact Us", link: "/contact" },
+  { title: "Privacy Policy", link: "/privacy-policy" },
+  { title: "Order Tracking", link: "/order-tracking" },
+  { title: "Return Policy", link: "/return-policy" },
+  { title: "Careers", link: "/careers" },
+  { title: "Sell on Kaiglo", link: "/sell-on-kaiglo" },
+  { title: "Terms", link: "/terms-and-conditions" },
+  { title: "FAQs", link: "/faqs" },
+];
+
 // Bottom Nav Menu
 export const bottomNavMenu = [
   {

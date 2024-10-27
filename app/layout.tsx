@@ -5,6 +5,7 @@ import QueryClientProvider from "@/contexts/QueryClientProvider";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthModalProvider } from "@/contexts/AuthModalContext";
+import { GoogleTagManager } from "@next/third-parties/google";
 
 const gotham = localFont({
   src: [
@@ -91,7 +92,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      {process.env.NODE_ENV === "production" &&
+        process.env.NEXT_PUBLIC_KAIGLO_ENV === "prod" ? (
+        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTMID as string} />
+      ) : null}
       <body className={`${gotham.className} bg-kaiglo_grey-100`}>
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${process.env.NEXT_PUBLIC_GTMID}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          ></iframe>
+        </noscript>
         <QueryClientProvider>
           <ToastProvider>
             <AuthModalProvider>

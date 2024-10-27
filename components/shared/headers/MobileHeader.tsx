@@ -1,9 +1,12 @@
+"use client";
 import CartButton from "@/components/shared/CartButton";
 import Logo from "@/components/shared/Logo";
-import CallToOrderHoverCard from "@/components/shared/headers/CallToOrderCTA";
+// import CallToOrderHoverCard from "@/components/shared/headers/CallToOrderCTA";
 import NotificationButton from "@/components/shared/NotificationButton";
 import dynamic from "next/dynamic";
 import Loader from "../Loader";
+import { useState } from "react";
+import { CallIcon } from "./CallToOrderCTA";
 
 const GlobalSearch = dynamic(
   () => import("@/components/shared/headers/GlobalSearch"),
@@ -22,7 +25,7 @@ const MobileHeader = () => {
         <Logo />
 
         <div className="flex space-x-4">
-          <CallToOrderHoverCard classNames="" />
+          <CallIcon />
           <NotificationButton notificationCountClassNames="top-0 -right-1" />
           <CartButton />
         </div>

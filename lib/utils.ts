@@ -120,11 +120,13 @@ export const transformCartItemToOrderItem = (
   sales: boolean,
   orderStatus: string = "PENDING",
   url: string,
+  appliedCoupon?: string,
 ): CheckoutOrderItem => {
   return {
     orderLines: [
       {
         address,
+        appliedCoupon,
         buyer,
         gender,
         orderItem: {

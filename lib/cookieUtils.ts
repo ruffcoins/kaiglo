@@ -7,6 +7,11 @@ export type ICacheCart = {
   id?: string;
   productName: string;
   maxQuantity: string;
+  storeName?: string;
+  category?: string;
+  subCategory?: string;
+  secondSubCategory?: string;
+  variant?: string[];
 } & IAddToCartDTO;
 
 export const getCartFromCookies = (): ICacheCart[] => {

@@ -10,16 +10,12 @@ interface CategoryFilterProps {
   categories: Category[];
   category: string;
   setCategory: Dispatch<SetStateAction<string>>;
-  // isOpen: boolean;
-  // setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const CategoryFilter: React.FC<CategoryFilterProps> = ({
   categories,
   category,
   setCategory,
-  // isOpen,
-  // setIsOpen,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 

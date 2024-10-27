@@ -30,7 +30,7 @@ const DeleteCartItemsDialog = ({
   };
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="lg:w-[400px]">
         <DialogHeader>
           <DialogTitle>Delete Cart Items</DialogTitle>

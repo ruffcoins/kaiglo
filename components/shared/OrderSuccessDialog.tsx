@@ -15,13 +15,29 @@ import Image from "next/image";
 import NotFound from "@/public/images/not-found.svg";
 import ModifiedButton from "./ModifiedButton";
 import Link from "next/link";
+import { ICacheCart } from "@/lib/cookieUtils";
+import { gtmPurchase } from "@/lib/gtm";
 
 export const OrderSuccessDialog = ({
   orderCreated,
   setOrderCreated,
+  order,
+  shipping,
+  coupon,
+  checkoutTotal,
+  address,
+  name,
+  phone,
 }: {
   orderCreated: boolean;
   setOrderCreated: React.Dispatch<SetStateAction<boolean>>;
+  order: ICacheCart[];
+  shipping: string;
+  coupon: string;
+  checkoutTotal: number;
+  address: string;
+  name: string;
+  phone: string;
 }) => {
   const router = useRouter();
   const { refetchWalletHistory } = useWalletHistory();
@@ -33,6 +49,41 @@ export const OrderSuccessDialog = ({
       refetchWallet();
       router.push("/app/orders");
     }, 10000);
+  }, []);
+
+  // Google analytics event tracking
+  useEffect(() => {
+    if (order) {
+      let orderList: {
+        id: string;
+        name: string;
+        price: number;
+        quantity: number;
+      }[] = [];
+
+      order.map((item) =>
+        orderList.push({
+          id: item.productId,
+          name: item.productName,
+          price: item.price,
+          quantity: parseInt(item.quantity),
+        }),
+      );
+
+      const props = {
+        value: checkoutTotal,
+        shipping,
+        coupon,
+        items: orderList,
+        customer: {
+          name,
+          address,
+          phone,
+        },
+      };
+
+      gtmPurchase(props);
+    }
   }, []);
 
   return (

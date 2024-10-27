@@ -164,7 +164,7 @@ const Category = ({ params }: { params: { categoryName: string } }) => {
             />
           </div>
 
-          <div className="mx-4 lg:mx-0">
+          <div className="mx-4 lg:mx-0 lg:space-y-10 space-y-4">
             <SelectedForYou categoryName={categoryName} />
 
             <SubCategoriesList categoryName={categoryName} />

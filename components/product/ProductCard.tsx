@@ -133,10 +133,12 @@ const ProductCard = ({
 
         <div className="flex justify-between items-end">
           <div className="flex flex-col">
-            <p className="font-bold">₦{price.toLocaleString()}</p>
-            {sales && (
+            <p className="font-bold">
+              <p className="font-bold">₦{price.toLocaleString()}</p>
+            </p>
+            {sales && oldPrice && (
               <p className="text-kaiglo_grey-placeholder text-sm line-through">
-                ₦{oldPrice?.toLocaleString()}
+                ₦{oldPrice.toLocaleString()}
               </p>
             )}
           </div>

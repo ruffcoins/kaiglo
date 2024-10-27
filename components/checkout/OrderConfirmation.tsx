@@ -11,7 +11,6 @@ import {
   transformCartItemToOrderItem,
   truncate,
 } from "@/lib/utils";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import NewAddressDialog from "@/components/address/dialogs/NewAddressDialog";
 import { useRouter } from "next/navigation";
@@ -34,18 +33,8 @@ import BuyNowComponent from "./BuyNowComponent";
 import { Dialog, DialogContent } from "../ui/dialog";
 import Loader from "../shared/Loader";
 import { Button } from "../ui/button";
-
-// const isAddressComplete = (address: IAddress | undefined): boolean => {
-//   return !!(
-//     address &&
-//     address.firstName &&
-//     address.lastName &&
-//     address.phoneNumber &&
-//     address.name &&
-//     address.city &&
-//     address.state
-//   );
-// };
+import Coupon from "./Coupon";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 const OrderConfirmation = () => {
   const { isLoggedIn } = useAuth();
@@ -63,6 +52,8 @@ const OrderConfirmation = () => {
   >([]);
   const [orderCreated, setOrderCreated] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [subtractBy, setSubtractBy] = useState<number>(0);
+  const [couponCode, setCouponCode] = useState<string>("");
 
   const {
     shippingCost,
@@ -211,6 +202,7 @@ const OrderConfirmation = () => {
               productInformation.sales,
               "PENDING",
               productPriceDetail.url as string,
+              couponCode.toUpperCase(),
             );
           } catch (innerError) {
             console.error("Error processing cartItem:", cartItem, innerError);
@@ -230,7 +222,7 @@ const OrderConfirmation = () => {
   // Transform cart items whenever cart is updated
   useEffect(() => {
     transformCart();
-  }, [checkoutItems, checkoutAddress, user, state, lga]);
+  }, [checkoutItems, checkoutAddress, user, state, lga, couponCode]);
 
   return (
     <>
@@ -410,6 +402,19 @@ const OrderConfirmation = () => {
                   </div>
                 </div>
 
+                <div className="order-2 lg:hidden border rounded-lg">
+                  {/* Mobile Coupon */}
+                  {checkoutItems && checkoutItems.length === 1 && (
+                    <Coupon
+                      price={checkoutItems?.[0].price}
+                      productId={checkoutItems?.[0].productId}
+                      storeId={checkoutItems?.[0].storeId as string}
+                      setSubtractBy={setSubtractBy}
+                      couponCode={couponCode}
+                      setCouponCode={setCouponCode}
+                    />
+                  )}
+                </div>
                 <div
                   className="lg:hidden block order-last pt-4"
                   style={{ boxShadow: "0 -4px 8px rgba(0, 0, 0, 0.08)" }}
@@ -448,7 +453,10 @@ const OrderConfirmation = () => {
                         Coupon:
                       </span>
                       <span className="font-medium text-kaiglo_brand-base">
-                        None
+                        {couponCode.length > 0
+                          ? `-₦${subtractBy.toLocaleString()}.00`
+                          : "None"}
+                        {/* None */}
                       </span>
                     </p>
                     <p className="flex items-center justify-between text-sm">
@@ -456,7 +464,9 @@ const OrderConfirmation = () => {
                       <span className="font-medium text-lg">
                         ₦
                         {(
-                          checkoutTotal + (Number(shippingCost?.price) || 0)
+                          checkoutTotal +
+                          (Number(shippingCost?.price) || 0) -
+                          (Number(subtractBy) || 0)
                         ).toLocaleString() ?? 0}
                       </span>
                     </p>
@@ -516,7 +526,9 @@ const OrderConfirmation = () => {
                 <span>Coupon:</span>
                 <span className="font-medium text-kaiglo_brand-base">
                   {/* ₦{subTotal.toLocaleString()} */}
-                  None
+                  {couponCode.length > 0
+                    ? `-₦${subtractBy.toLocaleString()}.00`
+                    : "None"}
                 </span>
               </p>
               <p className="flex items-center justify-between">
@@ -524,7 +536,9 @@ const OrderConfirmation = () => {
                 <span className="font-medium text-xl">
                   ₦
                   {(
-                    checkoutTotal + (Number(shippingCost?.price) || 0)
+                    checkoutTotal +
+                    (Number(shippingCost?.price) || 0) -
+                    (Number(subtractBy) || 0)
                   ).toLocaleString() ?? 0}
                 </span>
               </p>
@@ -534,14 +548,52 @@ const OrderConfirmation = () => {
                 className="w-full font-medium rounded-full px-8 py-3 disabled:cursor-not-allowed"
                 type={"button"}
                 value="PLACE ORDER"
-                onClick={proceedToCheckout}
+                onClick={() => {
+                  proceedToCheckout();
+
+                  if (
+                    process.env.NODE_ENV === "production" &&
+                    process.env.NEXT_PUBLIC_KAIGLO_ENV === "prod"
+                  ) {
+                    sendGTMEvent({ ecommerce: null });
+
+                    sendGTMEvent({
+                      event: "begin_checkout",
+                      ecommerce: {
+                        currency: "NGN",
+                        value: checkoutTotal,
+                        items: checkoutItems,
+                      },
+                      kaigloEnv: process.env.NEXT_PUBLIC_KAIGLO_ENV,
+                    });
+
+                    sendGTMEvent({ ecommerce: null });
+
+                    sendGTMEvent({
+                      event: "add_shipping_info",
+                      ecommerce: {
+                        currency: "NGN",
+                        value: checkoutTotal,
+                        items: checkoutItems,
+                      },
+                      kaigloEnv: process.env.NEXT_PUBLIC_KAIGLO_ENV,
+                    });
+                  }
+                }}
+                id="begin-checkout"
               />
             </div>
 
-            <div className="flex justify-between bg-white rounded-xl p-6 font-medium h-20">
-              <p>Have a Coupon?</p>
-              <ChevronDownIcon className="w-6 h-6" />
-            </div>
+            {checkoutItems && checkoutItems.length === 1 && (
+              <Coupon
+                price={checkoutItems?.[0].price}
+                productId={checkoutItems?.[0].productId}
+                storeId={checkoutItems?.[0].storeId as string}
+                setSubtractBy={setSubtractBy}
+                couponCode={couponCode}
+                setCouponCode={setCouponCode}
+              />
+            )}
           </div>
         </div>
       </CartLayout>
@@ -568,7 +620,11 @@ const OrderConfirmation = () => {
           setOpen={setOpenPaymentDialog}
           checkoutAmount={checkoutTotal.toString()}
           shippingAmount={shippingCost?.price as string}
-          totalAmount={checkoutTotal + Number(shippingCost?.price)}
+          totalAmount={
+            checkoutTotal +
+              (Number(shippingCost?.price) || 0) -
+              (Number(subtractBy) || 0) ?? 0
+          }
           lga={lga as string}
           state={state as string}
           checkoutItems={checkoutItems}
@@ -584,6 +640,7 @@ const OrderConfirmation = () => {
           transformedCartItems={transformedCartItems}
           setOrderCreated={setOrderCreated}
           setIsProcessing={setIsProcessing}
+          appliedCoupon={couponCode}
         />
       )}
 
@@ -602,6 +659,20 @@ const OrderConfirmation = () => {
         <OrderSuccessDialog
           orderCreated={orderCreated}
           setOrderCreated={setOrderCreated}
+          // Data for google analytics
+          order={checkoutItems}
+          shipping={shippingCost?.price as string}
+          coupon={couponCode}
+          checkoutTotal={checkoutTotal}
+          address={
+            checkoutAddress?.name +
+            ", " +
+            checkoutAddress?.city +
+            ", " +
+            checkoutAddress?.state
+          }
+          name={user.firstName + " " + user.lastName}
+          phone={checkoutAddress?.phoneNumber as string}
         />
       )}
     </>

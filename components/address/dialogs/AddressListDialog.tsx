@@ -49,8 +49,8 @@ const AddressListDialog = ({
   };
 
   const handleConfirm = () => {
-    if (localSelectedAddress) {
-      setCheckoutAddress(localSelectedAddress);
+    if (currentSelectedAddress) {
+      setCheckoutAddress(currentSelectedAddress);
       setOpen(false);
     }
   };

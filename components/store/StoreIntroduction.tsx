@@ -138,9 +138,16 @@ const StoreIntroduction = ({ storeName }: { storeName: string }) => {
 
               <div className="w-56 h-3 bg-kaiglo_grey-placeholder rounded-full">
                 <div
-                  className="h-3 bg-kaiglo_accent-base rounded-full"
+                  className="h-3 rounded-full"
                   style={{
                     width: `${(((store?.storeRating.qualityRating.sum ?? 0) / ((store?.storeRating.qualityRating.count ?? 0) * 5)) * 100).toFixed(0)}%`,
+                    backgroundColor:
+                      ((store?.storeRating.qualityRating.sum ?? 0) /
+                        ((store?.storeRating.qualityRating.count ?? 0) * 5)) *
+                        100 >
+                      0
+                        ? "#FFC12E"
+                        : "#A3A3A3",
                   }}
                 ></div>
               </div>
@@ -160,9 +167,16 @@ const StoreIntroduction = ({ storeName }: { storeName: string }) => {
 
               <div className="w-56 h-3 bg-kaiglo_grey-placeholder rounded-full">
                 <div
-                  className="h-3 bg-kaiglo_accent-base rounded-full"
+                  className="h-3 rounded-full"
                   style={{
                     width: `${(((store?.storeRating.deliveryRating.sum ?? 0) / ((store?.storeRating.deliveryRating.count ?? 0) * 5)) * 100).toFixed(0)}%`,
+                    backgroundColor:
+                      ((store?.storeRating.deliveryRating.sum ?? 0) /
+                        ((store?.storeRating.deliveryRating.count ?? 0) * 5)) *
+                        100 >
+                      0
+                        ? "#FFC12E"
+                        : "#A3A3A3",
                   }}
                 ></div>
               </div>

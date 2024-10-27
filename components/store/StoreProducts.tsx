@@ -11,6 +11,7 @@ import { useGetStoreProducts } from "@/hooks/queries/store/getStoreProducts";
 import { useGetStoreDetails } from "@/hooks/queries/store/getStoreDetails";
 import dynamic from "next/dynamic";
 import { useProductCategoryDetail } from "@/hooks/queries/products/productCategoryDetail";
+import FilterComponent0 from "../shared/FilterComponent0";
 
 const FilterComponent = dynamic(
   () => import("@/components/shared/FilterComponent"),
@@ -113,7 +114,7 @@ const StoreProducts = ({ storeName }: { storeName: string }) => {
   return (
     <div className="grid grid-cols-12 mx-4 lg:mx-8 gap-x-5">
       <div className="h-20 lg:block hidden lg:col-span-3 col-span-12 rounded-lg">
-        <FilterComponent
+        <FilterComponent0
           min={1000}
           max={1000000}
           products={storeProducts}

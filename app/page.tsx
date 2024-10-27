@@ -16,6 +16,10 @@ export default function Home() {
       SecondaryPromotionGrid: dynamic(
         () => import("@/components/landingPage/SecondaryPromotions"),
       ),
+      Sale: dynamic(() => import("@/components/landingPage/Sale")),
+      SecondSales: dynamic(
+        () => import("@/components/landingPage/SecondSales"),
+      ),
       FlashSale: dynamic(() => import("@/components/landingPage/FlashSale")),
       FeaturedProducts: dynamic(
         () => import("@/components/landingPage/FeaturedProducts"),
@@ -56,6 +60,10 @@ export default function Home() {
           <components.FlashSale />
         </Suspense>
 
+        <Suspense fallback={<div>Loading Sales...</div>}>
+          <components.Sale />
+        </Suspense>
+
         <Suspense fallback={<div>Loading Featured Products...</div>}>
           <components.FeaturedProducts />
         </Suspense>
@@ -70,6 +78,10 @@ export default function Home() {
 
         <Suspense fallback={<div>Loading App Deals Products...</div>}>
           <components.AppDealsProducts />
+        </Suspense>
+
+        <Suspense fallback={<div>Loading Sales...</div>}>
+          <components.SecondSales />
         </Suspense>
 
         <Suspense fallback={<div>Loading Top Brands...</div>}>

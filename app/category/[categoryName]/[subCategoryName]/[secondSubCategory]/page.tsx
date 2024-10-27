@@ -3,6 +3,7 @@
 import Loader from "@/components/shared/Loader";
 import InnerPageLayout from "@/components/layouts/InnerPageLayout";
 import dynamic from "next/dynamic";
+import { useGetSecondSubCategoryFilterOptions } from "@/hooks/queries/products/filterOptions";
 
 const SecondSubCategoryProductsPage = dynamic(
   () => import("@/components/category/SecondSubCategoriesProductsPage"),
@@ -26,6 +27,12 @@ export default async function Page({
   };
 }) {
   const { categoryName, subCategoryName, secondSubCategory } = params;
+  const { filterOptions } = useGetSecondSubCategoryFilterOptions(
+    decodeURIComponent(categoryName),
+    decodeURIComponent(subCategoryName),
+    decodeURIComponent(secondSubCategory),
+  );
+
   return (
     <InnerPageLayout>
       <div className="lg:my-10 my-24 space-y-5 min-h-[calc(100vh-8rem)]">
@@ -33,6 +40,7 @@ export default async function Page({
           Category={decodeURIComponent(categoryName)}
           SubCategory={decodeURIComponent(subCategoryName)}
           SecondSubCategory={decodeURIComponent(secondSubCategory)}
+          filterOptions={filterOptions}
         />
       </div>
     </InnerPageLayout>

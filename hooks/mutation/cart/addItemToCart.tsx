@@ -13,6 +13,7 @@ export interface IAddToCartDTO {
   size?: string;
   storage?: string;
   userId: string;
+  storeId?: string;
 }
 
 const useAddItemToCart = () => {

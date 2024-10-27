@@ -13,6 +13,7 @@ import { cn, createSlug, truncate } from "@/lib/utils";
 import { debounce } from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import OrderBox from "@/public/images/empty-state-order-box.svg";
+import { gtmSearch } from "@/lib/gtm";
 
 const GlobalSearch = ({
   customTopClassname,
@@ -58,6 +59,7 @@ const GlobalSearch = ({
   const handleSearch = (term: string) => {
     if (term.trim() !== "") {
       setSearchTerm(term);
+      gtmSearch({ searchTerm: term });
       setRecentSearches((prevSearches) => {
         const newSearch = { id: uuidv4(), term };
         const updatedSearches = [newSearch, ...prevSearches];

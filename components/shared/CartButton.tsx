@@ -8,10 +8,17 @@ import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 
 const CartButton = () => {
-  const { subTotal, cart, handleMergeCarts } = useCartContext();
+  const { subTotal, cart, handleMergeCarts, setMergingCarts } =
+    useCartContext();
+
+  const mergeCarts = () => {
+    setMergingCarts(true);
+    handleMergeCarts();
+    setMergingCarts(false);
+  };
 
   useEffect(() => {
-    handleMergeCarts();
+    mergeCarts();
   }, [handleMergeCarts]);
 
   return (

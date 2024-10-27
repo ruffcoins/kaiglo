@@ -22,6 +22,7 @@ export interface ControlledModifiedInputProps<
   classNames?: string;
   labelClassNames?: string;
   onValueChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
 }
 
 export interface ControlledModifiedSelectProps<T extends FieldValues> {

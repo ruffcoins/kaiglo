@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useNotifications } from "@/hooks/queries/notification/getNotifications";
-import { ChevronLeftIcon } from "@radix-ui/react-icons";
+import { BellIcon, ChevronLeftIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 
 const NotificationsComponent = () => {
@@ -31,6 +31,7 @@ const NotificationsComponent = () => {
           </>
         ) : notifications && notifications.length === 0 ? (
           <div className="lg:h-[calc(100vh-30rem)] h-[calc(100vh-10rem)] col-span-full flex flex-col items-center justify-center space-y-4">
+            <BellIcon className="w-10 h-10" />
             <div className="gap-2.5 flex flex-col items-center">
               <p className="font-medium">You have no notifications.</p>
             </div>

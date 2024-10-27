@@ -1,7 +1,5 @@
 "use client";
 
-import DesktopHeader from "../shared/headers/DesktopHeader";
-import Footer from "./Homepage/Footer";
 import useGetSalesPromotion from "@/hooks/queries/homePage/getSalePromotion";
 import { useGetSalePromotionProducts } from "@/hooks/queries/homePage/getSalePromotionProducts";
 import { capitalizeFirstLetterOfEachWord, cn } from "@/lib/utils";
@@ -10,13 +8,23 @@ import CountdownTimer from "../shared/CountdownTimer";
 import ProductCard from "../product/ProductCard";
 import Loader from "../shared/Loader";
 import { useInView } from "react-intersection-observer";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ProductCardSkeleton from "../shared/ProductCardSkeleton";
 import ErrorComponent from "../shared/ErrorComponent";
 import Link from "next/link";
 
 const SalesPageLayout = ({ saleName }: { saleName: string }) => {
   const { salesPromotion } = useGetSalesPromotion(saleName);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 769);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const {
     promotionProducts,
     isFetchingNextPage,
@@ -56,9 +64,7 @@ const SalesPageLayout = ({ saleName }: { saleName: string }) => {
   }
 
   return (
-    <main className="w-screen overflow-hidden">
-      <DesktopHeader />
-
+    <>
       {salesPromotion === undefined ? (
         <main className="grid min-50vh mt-40 max-w-screen place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8 shadow">
           <div className="text-center">
@@ -81,20 +87,24 @@ const SalesPageLayout = ({ saleName }: { saleName: string }) => {
       ) : (
         <div
           className={cn(
-            "relative lg:py-40 space-y-6 min-h-screen",
+            "relative pb-14 space-y-6 min-h-screen",
             `bg-[${salesPromotion?.colors.background}]`,
           )}
           style={{ background: salesPromotion?.colors.background }}
         >
           <div className="lg:mx-8 mx-4 mt-4">
             <Image
-              src={salesPromotion?.banners.desktopHome as string}
+              src={
+                isMobile
+                  ? salesPromotion.banners.mobileSalesPage
+                  : salesPromotion.banners.desktopSalesPage
+              }
               alt="promotion banner"
               width={2000}
               height={296}
-              className="h-72 object-cover rounded-t-md"
+              className="lg:h-[400px] h-36 object-cover rounded-t-md"
             />
-            <div className="h-24 rounded-b-md flex justify-center items-center bg-opacity-30 bg-black">
+            <div className="lg:h-24 h-16 rounded-b-md flex justify-center items-center bg-opacity-30 bg-black">
               <CountdownTimer
                 endDate={salesPromotion?.endDate as string}
                 backgroundColor={salesPromotion?.colors.itemCountBG}
@@ -102,7 +112,7 @@ const SalesPageLayout = ({ saleName }: { saleName: string }) => {
               />
             </div>
           </div>
-          <div className="grid grid-cols-6 gap-5 lg:mx-8 mx-4 mt-4">
+          <div className="lg:mx-8 mx-4 mt-4 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5">
             {promotionProducts?.map((product) => (
               <ProductCard
                 key={product.id}
@@ -143,9 +153,7 @@ const SalesPageLayout = ({ saleName }: { saleName: string }) => {
           </div>
         </div>
       )}
-
-      <Footer allowCTA={true} />
-    </main>
+    </>
   );
 };
 export default SalesPageLayout;

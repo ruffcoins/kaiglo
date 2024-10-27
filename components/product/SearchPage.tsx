@@ -17,6 +17,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { cn, sortOptions } from "@/lib/utils";
 import { useProductCategoryDetail } from "@/hooks/queries/products/productCategoryDetail";
+import FilterComponent0 from "../shared/FilterComponent0";
 
 const SearchPage = () => {
   const searchParams = useSearchParams();
@@ -178,40 +179,38 @@ const SearchPage = () => {
         </div>
       </div>
       <div className="grid grid-cols-12 mx-8 gap-x-5">
-        <div className="col-span-3 sticky top-40 self-start">
-          <div className="rounded-lg h-[calc(100vh-20rem)] overflow-y-auto">
-            <FilterComponent
-              min={minPrice}
-              max={maxPrice}
-              products={filterProducts}
-              category={category}
-              brand={brands[0]}
-              brands={productCategoryDetail?.brands || []}
-              productColorName={productColorNames[0]}
-              productColorNames={
-                productCategoryDetail?.productColorCode.map(
-                  (color) => color.color,
-                ) || []
-              }
-              productSize={productSizes[0]}
-              productSizes={[]}
-              productShipping={productShipping[0]}
-              productSale={productSales[0]}
-              productSales={productCategoryDetail?.sales || []}
-              setCategory={setCategory}
-              setMinPrice={setMinPrice}
-              setMaxPrice={setMaxPrice}
-              setBrands={setBrands}
-              setProductColorNames={setProductColorNames}
-              setProductSizes={setProductSizes}
-              setProductShipping={setProductShipping}
-              setProductSales={setProductSales}
-              name={name}
-              setName={setName}
-              setSort={setSort}
-              setKaigloSale={setKaigloSale}
-            />
-          </div>
+        <div className="h-20 col-span-3 rounded-lg">
+          <FilterComponent0
+            min={minPrice}
+            max={maxPrice}
+            products={filterProducts}
+            category={category}
+            brand={brands[0]}
+            brands={productCategoryDetail?.brands || []}
+            productColorName={productColorNames[0]}
+            productColorNames={
+              productCategoryDetail?.productColorCode.map(
+                (color) => color.color,
+              ) || []
+            }
+            productSize={productSizes[0]}
+            productSizes={[]}
+            productShipping={productShipping[0]}
+            productSale={productSales[0]}
+            productSales={productCategoryDetail?.sales || []}
+            setCategory={setCategory}
+            setMinPrice={setMinPrice}
+            setMaxPrice={setMaxPrice}
+            setBrands={setBrands}
+            setProductColorNames={setProductColorNames}
+            setProductSizes={setProductSizes}
+            setProductShipping={setProductShipping}
+            setProductSales={setProductSales}
+            name={name}
+            setName={setName}
+            setSort={setSort}
+            setKaigloSale={setKaigloSale}
+          />
         </div>
         {status === "loading" || isRefetching ? (
           <div className="col-span-9 grid grid-cols-4 gap-5">

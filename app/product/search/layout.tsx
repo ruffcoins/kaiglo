@@ -1,4 +1,5 @@
 import Footer from "@/components/layouts/Homepage/Footer";
+import MobileFooter from "@/components/layouts/Homepage/MobileFooter";
 import DesktopHeader from "@/components/shared/headers/DesktopHeader";
 import { ReactNode } from "react";
 
@@ -10,6 +11,7 @@ const layout = ({ children }: { children: ReactNode }) => {
       <div className=" lg:mt-20">{children}</div>
 
       <Footer allowCTA={false} />
+      <MobileFooter allowCTA={false} />
     </main>
   );
 };

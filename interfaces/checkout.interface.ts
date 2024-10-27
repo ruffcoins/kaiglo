@@ -3,6 +3,7 @@ import { ProductPriceDetail } from "./product.interface";
 export interface CheckoutOrderItem {
   orderLines: Array<{
     address: string;
+    appliedCoupon?: string;
     buyer: string;
     gender: string;
     orderItem: {

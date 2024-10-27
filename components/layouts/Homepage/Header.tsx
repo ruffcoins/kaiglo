@@ -5,7 +5,7 @@ const Header: React.FC = () => {
   return (
     <>
       <MobileHeader />
-      <DesktopHeader />
+      <DesktopHeader showCallToOrder={true} />
     </>
   );
 };

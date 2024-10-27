@@ -6,6 +6,7 @@ import {
   CheckoutOrderItem,
   CheckoutPaymentDTO,
 } from "@/interfaces/checkout.interface";
+import { sendGTMEvent } from "@next/third-parties/google";
 import { useEffect } from "react";
 import { usePaystackPayment } from "react-paystack";
 
@@ -139,6 +140,24 @@ const Pay = ({
           onClick={() => {
             initializePayment({ onSuccess, onClose });
             setOpen(false);
+
+            if (
+              process.env.NODE_ENV === "production" &&
+              process.env.NEXT_PUBLIC_KAIGLO_ENV === "prod"
+            ) {
+              sendGTMEvent({ ecommerce: null });
+
+              sendGTMEvent({
+                event: "add_payment_info",
+                ecommerce: {
+                  currency: "NGN",
+                  value: checkoutAmount,
+                  payment_type: "card",
+                  items: transformedCartItems,
+                },
+                kaigloEnv: process.env.NEXT_PUBLIC_KAIGLO_ENV,
+              });
+            }
           }}
         >
           Pay
