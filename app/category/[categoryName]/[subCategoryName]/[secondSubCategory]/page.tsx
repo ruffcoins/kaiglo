@@ -35,7 +35,7 @@ export default async function Page({
 
     return (
         <InnerPageLayout>
-            <div className="lg:my-10 my-24 space-y-5 min-h-[calc(100vh-8rem)]">
+            <div className="lg:my-10 my-24 space-y-5 min-h-[calc(100vh-8rem)] ">
                 <SecondSubCategoryProductsPage
                     Category={decodeURIComponent(categoryName)}
                     SubCategory={decodeURIComponent(subCategoryName)}

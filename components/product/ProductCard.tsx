@@ -78,13 +78,15 @@ const ProductCard = ({
                 <div>
                     <div className="relative">
                         <Link href={`/product/${createSlug(name)}/${id}`}>
-                            <Image
-                                src={imageUrl || Placeholder}
-                                alt="product image"
-                                className="w-full h-[156px] lg:h-[220px] rounded-lg"
-                                width={150}
-                                height={220}
-                            />
+                            <div className="relative w-full h-[140px]">
+                                <Image
+                                    src={imageUrl || Placeholder}
+                                    alt="product image"
+                                    className="object-cover"
+                                    sizes="100%"
+                                    fill={true}
+                                />
+                            </div>
                         </Link>
                         <div className="absolute top-2 right-2">
                             <AddToWishlistButton
