@@ -74,15 +74,15 @@ const ProductCard = ({
 
     return (
         <>
-            <Card className=" min-h-full p-2 lg:p-4 space-y-1.5 flex flex-col justify-between cursor-pointer">
+            <Card className=" min-h-full flex flex-col justify-between cursor-pointer">
                 <div>
-                    <div className="relative">
+                    <div className="relative pt-2">
                         <Link href={`/product/${createSlug(name)}/${id}`}>
-                            <div className="relative w-full h-[140px]">
+                            <div className="relative w-full h-[140px] md-h-[180px]">
                                 <Image
                                     src={imageUrl || Placeholder}
                                     alt="product image"
-                                    className="object-cover"
+                                    className="object-contain"
                                     sizes="100%"
                                     fill={true}
                                 />
@@ -105,7 +105,7 @@ const ProductCard = ({
                         )}
                     </div>
 
-                    <div className="mt-1.5 space-y-0.5">
+                    <div className="px-2 lg:px-4 mt-1.5 space-y-0.5">
                         <p className={cn("hidden lg:block text-sm mt-1 capitalize")}>
                             {truncate(name.toLowerCase(), 20)}
                         </p>
@@ -122,7 +122,7 @@ const ProductCard = ({
                     </div>
                 </div>
 
-                <div className="flex justify-between items-end">
+                <div className="flex justify-between items-end p-2 lg:p-4">
                     <div className="flex flex-col">
                         <p className="font-bold">
                             <p className="font-bold">₦{price.toLocaleString()}</p>
