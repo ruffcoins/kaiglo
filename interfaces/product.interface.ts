@@ -26,7 +26,7 @@ export interface ProductView {
   colorCode: string | null;
 }
 
-interface Specification {
+export interface Specification {
   name: string;
   option: string | null;
 }

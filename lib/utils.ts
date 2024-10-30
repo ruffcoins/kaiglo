@@ -6,6 +6,7 @@ import {
   IProduct,
   ProductColor,
   ProductPriceDetail,
+  Specification,
 } from "@/interfaces/product.interface";
 import { CheckoutOrderItem } from "@/interfaces/checkout.interface";
 
@@ -220,3 +221,24 @@ export const sortOptions = [
 //   );
 //   return categoryImage?.image;
 // };
+
+ /**
+     * Checks if at least one specification in the list has a non-null `option` value.
+     *
+     * @param specifications - An array of specification objects to check.
+     * @returns `true` if at least one specification has a non-null `option`; otherwise, `false`.
+     */
+ export const productSpecificationsAreValid =(specifications: Specification[] | undefined): boolean => {
+  console.log(specifications);
+  if (specifications === undefined) return false;
+  // Loop through each specification object
+  for (const spec of specifications) {
+      // If the current specification's `option` is not null, return `true`
+      console.log(spec.option);
+      if (spec.option != null) {
+          return true;
+      }
+  }
+  // If no specifications with non-null `option` were found, return `false`
+  return false;
+}
