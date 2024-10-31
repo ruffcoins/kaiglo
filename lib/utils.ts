@@ -227,7 +227,7 @@ export const sortOptions = [
      *
      * @param specifications - An array of specification objects to check.
      * @returns `true` if at least one specification has a non-null `option`; otherwise, `false`.
-     */
+ */
  export const productSpecificationsAreValid =(specifications: Specification[] | undefined): boolean => {
   console.log(specifications);
   if (specifications === undefined) return false;
