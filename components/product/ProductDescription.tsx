@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { CaretDownIcon, CaretUpIcon } from "@radix-ui/react-icons";
 import { useGetProductDescription } from "@/hooks/queries/products/gerProductDescription";
 import useProductDetail from "@/hooks/useProductDetail";
+import { productSpecificationsAreValid } from "@/lib/utils";
 
 const ProductDescription = ({ productId }: { productId: string }) => {
     return (
@@ -21,7 +22,9 @@ export default ProductDescription;
 const ProductSpecifications = ({ productId }: { productId: string }) => {
     const { data } = useProductDetail(productId);
 
-    return data?.response.specifications && data?.response.specifications.length > 0 ? (
+    return data?.response.specifications &&
+        data?.response.specifications.length > 0 &&
+        productSpecificationsAreValid(data?.response.specifications) ? (
         <div className="border border-kaiglo_grey-placeholder rounded-lg">
             <h2 className="font-bold py-4 px-6 border-b border-kaiglo_grey-placeholder">
                 Product Specifications
@@ -29,16 +32,20 @@ const ProductSpecifications = ({ productId }: { productId: string }) => {
             <div className="p-6">
                 <table className="w-full text-left">
                     <tbody className="space-y-4">
-                        {data?.response.specifications.map((specification) => (
-                            <tr key={specification.name} className="grid grid-cols-12">
-                                <td className="font-semibold lg:col-span-3 col-span-5 capitalize">
-                                    {specification.name}
-                                </td>
-                                <td className="capitalize lg:col-span-9 col-span-7">
-                                    {specification.option ?? "null"}
-                                </td>
-                            </tr>
-                        ))}
+                        {data?.response.specifications.map((specification) => {
+                            if (specification.option != null) {
+                                return (
+                                    <tr key={specification.name} className="grid grid-cols-12">
+                                        <td className="font-semibold lg:col-span-3 col-span-5 capitalize">
+                                            {specification.name}
+                                        </td>
+                                        <td className="capitalize lg:col-span-9 col-span-7">
+                                            {specification.option ?? "null"}
+                                        </td>
+                                    </tr>
+                                );
+                            }
+                        })}
                     </tbody>
                 </table>
             </div>

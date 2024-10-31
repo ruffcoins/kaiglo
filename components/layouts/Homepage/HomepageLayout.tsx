@@ -8,7 +8,7 @@ const HomepageLayout: React.FC<HomepageLayoutProps> = ({ children }) => {
         <main className="">
             <Header />
 
-            <div className="relative mt-[8.3rem] lg:mt-40">{children}</div>
+            <div className="relative mt-[8.3rem] lg:mt-40 max-w-[1500px] m-auto">{children}</div>
 
             <Footer allowCTA={false} />
             <MobileFooter allowCTA={false} />
